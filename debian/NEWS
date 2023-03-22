@@ -1,5 +1,10 @@
-gnustep-make (2.8.0-deepin) stable; urgency=medium
+gnustep-make (2.6.6-1) unstable; urgency=low
 
-  * ['Rebuild  against by  current gcc 11.2']
+  By default, Texinfo documentation in HTML format is now generated with
+  "makeinfo" instead of "texi2html".  To revert to the old behavior,
+  override the variables GNUSTEP_TEXI2HTML and GNUSTEP_TEXI2HTML_FLAGS in
+  your makefiles.  If you prefer makeinfo's output as one file, define
+  GNUSTEP_TEXI2HTML_FLAGS to --no-split.
 
- -- Deepin Packages Builder <packages@deepin.org>  Thu, 11 Aug 2022 21:56:00 +0800
+ -- Yavor Doganov <yavor@gnu.org>  Thu, 22 May 2014 17:15:49 +0300
+

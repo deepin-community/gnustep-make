@@ -1,3 +1,5 @@
+debian/gnustep-make-doc.install
+debian/gnustep-make-doc.links
 Documentation/temp-installation/
 Documentation/build-gnustep-make-doc/
 Documentation/*.pdf

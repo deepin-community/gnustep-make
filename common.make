@@ -638,7 +638,7 @@ INTERNAL_OBJCFLAGS = -fno-strict-aliasing
 # Linux CentOS 6.5 i386 clang...
 # Clang inserts move aligned packed instructions (i.e. movaps,etc) assembly
 # code however stack is not aligned causing fault crashes...
-ifeq ($(CC),clang)
+ifeq ($(CLANG_CC), yes)
 ifneq ($(wildcard /etc/redhat-release),"")
 RH_RELEASE := $(shell cat 2>/dev/null /etc/redhat-release)
 ifeq ($(findstring CentOS,$(RH_RELEASE)),CentOS)
@@ -815,7 +815,7 @@ endif
 #
 # Common variables for subprojects
 #
-SUBPROJECT_PRODUCT = subproject$(OEXT)
+SUBPROJECT_PRODUCT = subproject.txt
 
 #
 # Set JAVA_HOME if not set.
@@ -909,12 +909,14 @@ endif
 ifneq ($(FOUNDATION_LIB), apple)
 # Under Win32 paths are so confused this warning is not worthwhile
 ifneq ($(findstring mingw, $(GNUSTEP_HOST_OS)), mingw)
+ifneq ($(GNUSTEP_HOST_OS), windows)
 
   ifeq ($(findstring $(GNUSTEP_SYSTEM_TOOLS),$(PATH)),)
     $(warning WARNING: Your PATH may not be set up correctly !)
     $(warning Please try again after adding "$(GNUSTEP_SYSTEM_TOOLS)" to your path)
   endif
 
+endif
 endif
 endif # code used when FOUNDATION_LIB != apple
 

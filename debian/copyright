@@ -3,11 +3,11 @@ Upstream-Name: gnustep-make
 Source: ftp://ftp.gnustep.org/pub/gnustep/core/
 
 Files: *
-Copyright: 1996-2020 Free Software Foundation
+Copyright: 1996-2022 Free Software Foundation
 License: GPL-3+
 
 Files: debian/*
-Copyright: 2001-2020 Debian GNUstep maintainers
+Copyright: 2001-2023 Debian GNUstep maintainers
 License: GPL-3+
 
 License: GPL-3+

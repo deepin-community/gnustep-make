@@ -21,7 +21,7 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 AC_INIT
-AC_PREREQ(2.57)
+AC_PREREQ([2.71])
 AC_CONFIG_SRCDIR([application.make])
 AC_CONFIG_MACRO_DIRS([m4])
 
@@ -79,13 +79,20 @@ AC_PROG_CPP
 # compile/link C++ code. :-)
 AC_PROG_CXX
 
-# Similarly for the ObjC++ compiler ... but only new versions of autoconf
-# support it, so we pretend by using the C++ compiler
-#AC_PROG_OBJCXX
-OBJCXX="${CXX}"
+# Similarly for the ObjC++ compiler...
+AC_PROG_OBJCXX
 
 # We may use egrep for some tests further down below
 AC_PROG_EGREP
+
+# Search for a debugger. We try 'gdb' then 'lldb'.  If
+# we can't find it, we set it to 'gdb', even if that will fail later
+# on.
+AC_CHECK_PROGS(DEBUGGER, [gdb lldb], gdb)
+
+# Used by gnustep-config to output the debugger variable and
+# gnustep-tests.
+AC_SUBST(DEBUGGER)
 
 #--------------------------------------------------------------------
 # Check if we are using Apple cc
@@ -111,6 +118,20 @@ AC_SUBST(cc_cppprecomp)
 AC_SUBST(cc_bundle)
 
 #--------------------------------------------------------------------
+# config.guess returns mingw64 and pc as the os and vendor, but the
+# mingw-w64 project chose to use mingw32 and w64 respectively.  We
+#need to standardise on one.
+#--------------------------------------------------------------------
+if test "$host_os" = mingw64; then
+  host_os=mingw32
+  host_vendor=w64
+fi
+if test "$target_os" = mingw64; then
+  target_os=mingw32
+  target_vendor=w64
+fi
+
+#--------------------------------------------------------------------
 # specific target_os options
 #--------------------------------------------------------------------
 case "$target_os" in
@@ -126,25 +147,26 @@ esac
 #--------------------------------------------------------------------
 case $host_os in
   *cygwin*  )
-	MINGW32=no
-	MINGW64=no
-	CYGWIN=yes
-	MSWIND=yes;;
+    MINGW32=no
+    MINGW64=no
+    CYGWIN=yes
+    MSWIND=yes;;
   *mingw32* )
-	MINGW32=yes
-	MINGW64=no
-	CYGWIN=no
-	MSWIND=yes;;
-  *mingw64* )
-	MINGW32=no
-	MINGW64=yes
-	CYGWIN=no
-	MSWIND=yes;;
-          * )
-	MINGW32=no
-	MINGW64=no
-	CYGWIN=no
-	MSWIND=no;;
+    if test $host_vendor = pc
+    then
+      MINGW32=yes
+      MINGW64=no
+    else
+      MINGW32=no
+      MINGW64=yes
+    fi
+    CYGWIN=no
+    MSWIND=yes;;
+  * )
+    MINGW32=no
+    MINGW64=no
+    CYGWIN=no
+    MSWIND=no;;
 esac
 AC_SUBST(CYGWIN)
 
@@ -228,6 +250,12 @@ else
   AC_CHECK_PROG(AR,      ar,      ar)
   AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
   AC_PROG_RANLIB
+fi
+
+# On Windows MSVC, AC_PROG_CC will not detect Clang in MSVC mode as a
+# GNU C compiler and therefore set CFLAGS to just "-g", so we fix it.
+if test "$target_os" = windows -a x"${GCC}" != x"yes" -a x"$gs_cv_cc_is_clang" = x"yes"; then
+  CFLAGS="-g -O2"
 fi
 
 AC_PROG_INSTALL
@@ -1133,86 +1161,67 @@ fi
 AC_MSG_CHECKING(whether objc has thread support)
 if test "$OBJC_THREAD" != ""; then
   LIBS="$OBJCRT $LIBS $OBJC_THREAD"
-  AC_TRY_RUN([#include "config_thread.m"], 
-	objc_threaded="$OBJC_THREAD",
-	objc_threaded="", objc_threaded="")
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="$OBJC_THREAD"],[objc_threaded=""],[objc_threaded=""])
 elif test "$host_os" = linux-gnu; then
   LIBS="$OBJCRT -lpthread"
-  AC_TRY_RUN([#include "config_thread.m"], objc_threaded="-lpthread",
-	objc_threaded="", objc_threaded="-lpthread")
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-lpthread"],[objc_threaded=""],[objc_threaded="-lpthread"])
   if test x"$objc_threaded" = x""; then
     LIBS="$OBJCRT"
-    AC_TRY_RUN([#include "config_thread.m"],
-          objc_threaded="works",
-	  objc_threaded="", objc_threaded="works")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded="works"])
+  fi
+elif test "$host_os" = linux-musl; then
+  LIBS="$OBJCRT -lpthread"
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-lpthread"],[objc_threaded=""],[objc_threaded="-lpthread"])
+  if test x"$objc_threaded" = x""; then
+    LIBS="$OBJCRT"
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded="works"])
   fi
 elif test "`echo $host_os|sed 's/[[0-9]].*//'|sed s/elf//`" = freebsd; then
   LIBS="-pthread $OBJCRT"
-  AC_TRY_RUN([#include "config_thread.m"], objc_threaded="-pthread",
-       objc_threaded="", objc_threaded="-pthread")
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-pthread"],[objc_threaded=""],[objc_threaded="-pthread"])
   if test x"$objc_threaded" = x""; then
     LIBS="-lpthread $OBJCRT"
-    AC_TRY_RUN([#include "config_thread.m"], objc_threaded="-lpthread",
-	objc_threaded="", objc_threaded="-lpthread")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-lpthread"],[objc_threaded=""],[objc_threaded="-lpthread"])
   fi
   if test x"$objc_threaded" = x""; then
     LIBS="$OBJCRT -lpcthread"
-    AC_TRY_RUN([#include "config_thread.m"], objc_threaded="-lpcthread",
-	objc_threaded="", objc_threaded="-lpcthread")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-lpcthread"],[objc_threaded=""],[objc_threaded="-lpcthread"])
   fi
   if test x"$objc_threaded" = x""; then
     LIBS="$OBJCRT"
-    AC_TRY_RUN([#include "config_thread.m"],
-          objc_threaded="works",
-	  objc_threaded="", objc_threaded="works")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded="works"])
   fi
 elif test "$MINGW32" = yes; then
   # Mingw doesn't need anything extra for threads
   LIBS="$OBJCRT $LIBS"
-  AC_TRY_RUN([#include "config_thread.m"], 
-	objc_threaded="works",
-	objc_threaded="", objc_threaded="works")
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded="works"])
 elif test "$MINGW64" = yes; then
   # Mingw doesn't need anything extra for threads
   LIBS="$OBJCRT $LIBS"
-  AC_TRY_RUN([#include "config_thread.m"], 
-	objc_threaded="works",
-	objc_threaded="", objc_threaded="works")
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded="works"])
 elif test "$OBJC_RUNTIME_LIB" = "apple"; then
   # Apple doesn't need anything extra for threads
   LIBS="$OBJCRT $LIBS"
-  AC_TRY_RUN([#include "config_thread.m"], 
-	objc_threaded="works",
-	objc_threaded="", objc_threaded="works")
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded="works"])
 else
   LIBS="$OBJCRT $LIBS"
-  AC_TRY_RUN([#include "config_thread.m"], 
-	objc_threaded="works",
-	objc_threaded="", objc_threaded="")
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded=""])
   if test x"$objc_threaded" = x""; then
     LIBS="$OBJCRT $saved_LIBS -lpthread "
-    AC_TRY_RUN([#include "config_thread.m"], 
-    	objc_threaded="-lpthread", 
-	objc_threaded="", objc_threaded="")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-lpthread"],[objc_threaded=""],[objc_threaded=""])
   fi
   if test x"$objc_threaded" = x""; then
     # Solaris, OpenBSD/sparc
     LIBS="$OBJCRT $saved_LIBS -lpthread -lposix4"
-    AC_TRY_RUN([#include "config_thread.m"], 
-    	objc_threaded="-lpthread -lposix4", 
-	objc_threaded="", objc_threaded="")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-lpthread -lposix4"],[objc_threaded=""],[objc_threaded=""])
   fi
   if test x"$objc_threaded" = x""; then
     LIBS="$OBJCRT $saved_LIBS -lthread "
-    AC_TRY_RUN([#include "config_thread.m"], 
-    	objc_threaded="-lthread", 
-	objc_threaded="", objc_threaded="")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="-lthread"],[objc_threaded=""],[objc_threaded=""])
   fi
   if test x"$objc_threaded" = x""; then
     LIBS="$OBJCRT"
-    AC_TRY_RUN([#include "config_thread.m"], 
-          objc_threaded="works",
-	  objc_threaded="", objc_threaded="works")
+    AC_RUN_IFELSE([AC_LANG_SOURCE([[#include "config_thread.m"]])],[objc_threaded="works"],[objc_threaded=""],[objc_threaded="works"])
   fi
 fi
 if test x"$objc_threaded" = x""; then
@@ -1229,17 +1238,11 @@ AC_SUBST(ac_cv_objc_threaded)
 
 AC_MSG_CHECKING(whether Objective-C++ is supported)
 
-# Only new autoconf supports ObjC++ so we use C++ instead for now
-#AC_LANG_PUSH(Objective C++)
-#OBJCXXFLAGS_saved="$OBJCXXFLAGS"
-#OBJCXXFLAGS="$OBJCXXFLAGS -x objective-c++"
-#OBJCXXPPFLAGS_saved="$OBJCXXPPFLAGS"
-#OBJCXXPPFLAGS="$OBJCXXPPFLAGS -x objective-c++"
-AC_LANG_PUSH(C++)
-CXXFLAGS_saved="$CXXFLAGS"
-CXXFLAGS="$CXXFLAGS -x objective-c++"
-CXXPPFLAGS_saved="$CXXPPFLAGS"
-CXXPPFLAGS="$CXXPPFLAGS -x objective-c++"
+AC_LANG_PUSH(Objective C++)
+OBJCXXFLAGS_saved="$OBJCXXFLAGS"
+OBJCXXFLAGS="$OBJCXXFLAGS -x objective-c++"
+OBJCXXPPFLAGS_saved="$OBJCXXPPFLAGS"
+OBJCXXPPFLAGS="$OBJCXXPPFLAGS -x objective-c++"
 
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 
@@ -1265,13 +1268,9 @@ if test x"$objcc" = x"no"; then
   OBJCXX=
 fi
 AC_SUBST(OBJCXX)
-# Only new autoconf supports ObjC++ so we use C++ instead for now
-#OBJCXXFLAGS="$OBJCXXFLAGS_saved"
-#OBJCXXPPFLAGS="$OBJCXXPPFLAGS_saved"
-#AC_LANG_POP(Objective C++)
-CXXFLAGS="$CXXFLAGS_saved"
-CXXPPFLAGS="$CXXPPFLAGS_saved"
-AC_LANG_POP(C++)
+OBJCXXFLAGS="$OBJCXXFLAGS_saved"
+OBJCXXPPFLAGS="$OBJCXXPPFLAGS_saved"
+AC_LANG_POP(Objective C++)
 
 #--------------------------------------------------------------------
 # Check if compiler supports -fobjc-arc, and if so, turn it on!
@@ -1398,7 +1397,7 @@ USE_OBJC_EXCEPTIONS=$enableval,
 USE_OBJC_EXCEPTIONS=maybe)
 
 if test x"$USE_OBJC_EXCEPTIONS" = x"maybe"; then
-  if test x"$MSWIND" = x"yes"; then
+  if test x"$MSWIND" = x"yes" -a "$OBJC_RUNTIME_LIB" = "gnu"; then
     USE_OBJC_EXCEPTIONS=no
   fi
 fi

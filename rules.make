@@ -229,7 +229,7 @@ ifeq ($(OBJC_RUNTIME_LIB), ng)
     ifeq ($(ARC_CPPFLAGS),)
       ARC_CPPFLAGS = -DGS_WITH_ARC=1
     endif
-    INTERNAL_OBJC_FLAGS += $(ARC_OBJCFLAGS)
+    INTERNAL_OBJCFLAGS += $(ARC_OBJCFLAGS)
   else
     ARC_OBJCFLAGS=
     ARC_CPPFLAGS=
@@ -337,13 +337,19 @@ $(ADDITIONAL_JAVACFLAGS) $(AUXILIARY_JAVACFLAGS)
 ALL_JAVAHFLAGS = $(INTERNAL_CLASSPATHFLAGS) $(ADDITIONAL_JAVAHFLAGS) \
 $(AUXILIARY_JAVAHFLAGS)
 
+# CORE_LDFLAGS are those used for both partial link and final link.
 ifeq ($(shared),no)
-  ALL_LDFLAGS = $(STATIC_LDFLAGS)
+  CORE_LDFLAGS = $(STATIC_LDFLAGS)
 else
-  ALL_LDFLAGS =
+  CORE_LDFLAGS =
 endif
-ALL_LDFLAGS += $(ADDITIONAL_LDFLAGS) $(AUXILIARY_LDFLAGS) $(GUI_LDFLAGS) \
+CORE_LDFLAGS += $(ADDITIONAL_LDFLAGS) $(AUXILIARY_LDFLAGS) $(GUI_LDFLAGS) \
                $(BACKEND_LDFLAGS) $(SYSTEM_LDFLAGS) $(INTERNAL_LDFLAGS)
+
+# ALL_LDFLAGS are the set of flags used in the final link of an executable
+# or a shared library/bundle.
+ALL_LDFLAGS += $(CORE_LDFLAGS) $(FINAL_LDFLAGS)
+
 # In some cases, ld is used for linking instead of $(CC), so we can't use
 # this in ALL_LDFLAGS
 CC_LDFLAGS = $(RUNTIME_FLAG) $(ARC_OBJCFLAGS)
@@ -563,14 +569,6 @@ $(GNUSTEP_OBJ_INSTANCE_DIR)/%.mm$(OEXT) : %.mm
 # into object files.
 #
 ifeq ($(findstring mingw32, $(GNUSTEP_TARGET_OS)), mingw32)
-# Add the .rc suffix on Windows.
-.SUFFIXES: .rc
-
-# A rule to generate a .o file from the .rc file.
-$(GNUSTEP_OBJ_INSTANCE_DIR)/%.rc$(OEXT): %.rc
-	$(ECHO_COMPILING)windres $< $@$(END_ECHO)
-
-else ifeq ($(findstring mingw64, $(GNUSTEP_TARGET_OS)), mingw64)
 # Add the .rc suffix on Windows.
 .SUFFIXES: .rc
 
