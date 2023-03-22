@@ -2,4 +2,4 @@
 gnustep-make: package-contains-empty-directory
 
 # According to upstream, false positive
-gnustep-make: old-style-config-script usr/bin/gnustep-config
+gnustep-make: old-style-config-script

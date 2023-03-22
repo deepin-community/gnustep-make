@@ -9,6 +9,47 @@
 The currently released version is @samp{@value{GNUSTEP-MAKE-VERSION}}.
 @end ifclear
 
+@section Changes in version @samp{2.9.1}
+
+@itemize
+
+@item  Add workaround for Clang bug on Windows MSVC when tests contain no Objective-C constructs.
+
+@item  Various fixes for minor issues introduced in the test framework by parallelisation mof testcase execution.
+
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
+@section Changes in version @samp{2.9.0}
+
+@itemize
+
+@item Better check for objc runtime on Windows.
+
+@item Split linker flags to better support partial linking: @code{ALL_LDFLAGS}
+is now a combination of @code{FINAL_LDFLAGS} and @code{ALL_LDFLAGS}.
+
+@item Better support for newer gcc versions.
+
+@item Add support for storyboard files.
+
+@item Increase autoconf version to 2.65 and make autoconf handle Objective-C++
+and OBJCXX variables directly.
+
+@item Fix bug that prevented ARC from getting used.
+
+@item Link subproject object files directly instead of first merging them into
+@code{subproject.o}.
+
+@item Support building on Windows with Clang MSVC target.
+
+@item Improve mingw64 support: for instance, adopt the triplet used by the
+mingw-w64 project rather than using the one returned by autoconf. Fixes building
+Gorm.
+
+@end itemize
+
 @section Changes in version @samp{2.8.0}
 
 @itemize
@@ -41,8 +82,6 @@ Multi-architecture directory layout adjusted to be more Debian compatible
 Framework support fixes
 
 Various other minor bugfixes
-
-@ifclear ANNOUNCE-ONLY
 
 @section Changes in version @samp{2.6.8}
 

@@ -9,4 +9,3 @@ Documentation/gnustep-[!m]*.pdf usr/share/GNUstep/Documentation/User/GNUstep/
 # Install txt docs
 Documentation/temp-installation/share/GNUstep/Documentation/Developer/Make/ReleaseNotes/*  usr/share/GNUstep/Documentation/Developer/Make/ReleaseNotes/
 Documentation/DESIGN usr/share/GNUstep/Documentation/Developer/Make/Manual/
-Documentation/README.*  usr/share/GNUstep/Documentation/User/GNUstep/

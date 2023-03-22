@@ -1,2 +1,3 @@
-Tests: file-tests
-Depends: @, file, shunit2
+Tests: file-tests build
+Restrictions: allow-stderr
+Depends: @, file, shunit2, libgnustep-gui-dev, texinfo, texlive-latex-base

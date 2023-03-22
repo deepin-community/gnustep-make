@@ -23,3 +23,13 @@ ifeq (,$(findstring terse,$(DEB_BUILD_OPTIONS)))
 verbose := messages=yes
 endif
 endif
+
+# Support for "nodoc" in DEB_BUILD_OPTIONS (Policy §4.9.1).
+# Note that not all GNUstep packages comply with the (unwritten) rule
+# to build documentation only when the "doc" variable is defined to
+# "yes"; so you might need to make some extra adjustments.
+ifndef docs
+ifeq (,$(findstring nodoc,$(DEB_BUILD_OPTIONS)))
+docs := doc=yes
+endif
+endif
