@@ -1,0 +1,690 @@
+Description: Fix FTBFS with texinfo/7.1.
+Author: Yavor Doganov <yavor@gnu.org>
+Bug-Debian: https://bugs.debian.org/1057413
+Forwarded: https://savannah.gnu.org/bugs/?64983
+Applied-Upstream: commit:6d6d77c
+Last-Update: 2023-12-05
+---
+
+--- gnustep-make.orig/Documentation/gnustep-filesystem.texi
++++ gnustep-make/Documentation/gnustep-filesystem.texi
+@@ -26,10 +26,11 @@
+ @contents
+ 
+ 
+-@node Top, The System Domain, (dir), (dir)
+-@chapter GNUstep Filesystem Hierarchy
++@node Top
++@top GNUstep Filesystem Hierarchy
+  
+ @menu
++* Introduction::
+ * The System Domain::           
+ * The Local Domain::            
+ * The Network Domain::          
+@@ -38,6 +39,9 @@
+ * Configuration::                 
+ @end menu
+ 
++@node Introduction
++@chapter Introduction
++
+ On GNUstep, there are four separate places where files related to
+ GNUstep are installed: these places are called "domains".  These four
+ domains are the System domain, the Network domain, the Local domain,
+@@ -83,7 +87,7 @@
+ @file{/usr/local}.
+ 
+ @node The System Domain, The Local Domain, Top, Top
+-@section The System Domain
++@chapter The System Domain
+ 
+ The System domain contains all files which were included in the
+ default GNUstep installation or distribution.  These files are
+@@ -105,7 +109,7 @@
+ 
+ 
+ @node The Local Domain, The Network Domain, The System Domain, Top
+-@section The Local Domain
++@chapter The Local Domain
+ 
+ The Local domain is meant as the location for installing software
+ which was not included with your GNUstep distribution and which you or
+@@ -125,7 +129,7 @@
+ as the @file{Local} folder of your GNUstep installation.
+ 
+ @node The Network Domain, The Users Domain, The Local Domain, Top
+-@section The Network Domain
++@chapter The Network Domain
+ 
+ The @file{Network} domain is optional and is usually coalesced with
+ the @file{Local} domain by default; this is particularly appropriate
+@@ -151,7 +155,7 @@
+ 
+ 
+ @node The Users Domain, Structure of a Domain, The Network Domain, Top
+-@section The Users Domain
++@chapter The Users Domain
+ 
+ The main purpose of the Users domain is to hold GNUstep related files
+ which shall not be available to other users on the system but only to
+@@ -167,7 +171,7 @@
+ home directory called @file{GNUstep}.
+ 
+ @node Structure of a Domain, Configuration, The Users Domain, Top
+-@section Structure of a Domain
++@chapter Structure of a Domain
+ 
+ In this section we examine the interesting locations in a domain.  We
+ will enumerate the locations, and discuss what should be installed in
+@@ -192,7 +196,7 @@
+ @end menu
+ 
+ @node The GNUstep Filesystem Layout, Accessing Domain Locations, Structure of a Domain, Structure of a Domain
+-@subsection The GNUstep Filesystem Layout
++@section The GNUstep Filesystem Layout
+ 
+ We quickly present the GNUstep filesystem layout for a domain first
+ because it is an essential reference for all discussions on the
+@@ -234,7 +238,7 @@
+ 'Library' location.
+ 
+ @node Accessing Domain Locations, Applications, The GNUstep Filesystem Layout, Structure of a Domain
+-@subsection Accessing Domain Locations
++@section Accessing Domain Locations
+ 
+ In order to install and run software that uses some resources, you
+ need to be able to install the resources in the appropriate location,
+@@ -277,7 +281,7 @@
+ 
+ 
+ @node Applications, Admin Applications , Accessing Domain Locations, Structure of a Domain
+-@subsection Applications
++@section Applications
+ 
+ The @file{Applications} location contains applications. Applications
+ are programs that typically have a GUI interface and contain
+@@ -306,7 +310,7 @@
+ 
+ 
+ @node Admin Applications, Web Applications, Applications, Structure of a Domain
+-@subsection Admin Applications
++@section Admin Applications
+ 
+ The @file{Admin Applications} location contains applications that are
+ only useful to the system administrator.  A normal user wouldn't have
+@@ -326,7 +330,7 @@
+ 
+ 
+ @node Web Applications, Tools, Admin Applications, Structure of a Domain
+-@subsection Web Applications
++@section Web Applications
+ 
+ The @file{Web Applications} location contains web applications that
+ were created using GSWeb or SOPE.  These are programs contained with
+@@ -347,7 +351,7 @@
+ 
+ 
+ @node Tools, Admin Tools, Web Applications, Structure of a Domain
+-@subsection Tools
++@section Tools
+ 
+ The @file{Tools} location contains tools and executable scripts. Tools
+ are programs which generally have a command-line interface. Most are
+@@ -376,7 +380,7 @@
+ 
+ 
+ @node Admin Tools, Library, Tools, Structure of a Domain
+-@subsection Admin Tools
++@section Admin Tools
+ 
+ The @file{Admin Tools} location contains tools and executable scripts
+ that are only useful to the system administrator.  A normal user
+@@ -397,7 +401,7 @@
+ 
+ 
+ @node Library, Headers, Admin Tools, Structure of a Domain
+-@subsection Library
++@section Library
+ 
+ The @file{Library} location contains most of the resources that are
+ located and loaded at runtime.  These resources are organized in
+@@ -435,7 +439,7 @@
+ 
+ 
+ @node Headers, Libraries, Library, Structure of a Domain
+-@subsection Headers
++@section Headers
+ 
+ The @code{Headers} location contains header files associated with a
+ library located in @code{Libraries}.
+@@ -453,7 +457,7 @@
+ 
+ 
+ @node Libraries, Documentation, Headers, Structure of a Domain
+-@subsection Libraries
++@section Libraries
+ 
+ The @code{Libraries} location contains libraries (shared/static object
+ files that are linked into programs).  (NOTE: In the GNUstep
+@@ -481,7 +485,7 @@
+ 
+ 
+ @node Documentation, Documentation (Info), Libraries, Structure of a Domain
+-@subsection Documentation
++@section Documentation
+ 
+ The @code{Documentation} location contains documentation for
+ libraries, applications, etc.
+@@ -499,7 +503,7 @@
+ 
+ 
+ @node Documentation (Info), Documentation (Man Pages), Documentation, Structure of a Domain
+-@subsection Documentation (Info)
++@section Documentation (Info)
+ 
+ The @code{Documentation (Info)} location contains documentation in
+ info format.
+@@ -517,7 +521,7 @@
+ 
+ 
+ @node Documentation (Man Pages), Folders inside Library, Documentation (Info), Structure of a Domain
+-@subsection Documentation (Man Pages)
++@section Documentation (Man Pages)
+ 
+ 
+ The @code{Documentation (Man Pages)} location contains Unix man pages.
+@@ -535,7 +539,7 @@
+ 
+ 
+ @node Folders inside Library, , Documentation (Man Pages), Structure of a Domain
+-@subsection Folders inside Library
++@section Folders inside Library
+ 
+ In this section we discuss the standard folders that are available
+ inside the @code{Library} location.  To find any of these folders,
+@@ -570,7 +574,7 @@
+ @end menu
+ 
+ @node ApplicationSupport, Bundles, Folders inside Library, Folders inside Library
+-@subsubsection ApplicationSupport
++@subsection ApplicationSupport
+ 
+ This directory contains bundles and other resources that are provided
+ for an application, but that are not specifically distributed with
+@@ -595,7 +599,7 @@
+ @code{NSSearchPathForDirectoriesInDomains()}.
+ 
+ @node Bundles, ColorPickers, ApplicationSupport, Folders inside Library
+-@subsubsection Bundles
++@subsection Bundles
+ 
+ This directory contains bundles. Bundles are collections of executable
+ code and associated resources that may be loaded at runtime by an
+@@ -615,7 +619,7 @@
+ 
+ 
+ @node ColorPickers, Colors, Bundles, Folders inside Library
+-@subsubsection ColorPickers
++@subsection ColorPickers
+ 
+ This directory contains bundles that are used by the color picking
+ system. They may include code that implements picking colors from a
+@@ -625,7 +629,7 @@
+ @code{Library}.
+ 
+ @node Colors, DTDs, ColorPickers, Folders inside Library
+-@subsubsection Colors
++@subsection Colors
+ 
+ This directory contains files that define specific color mappings for
+ use within libraries or applications that require color definitions.
+@@ -634,7 +638,7 @@
+ @code{Library}.
+ 
+ @node DTDs, DocTemplates, Colors, Folders inside Library
+-@subsubsection DTDs
++@subsection DTDs
+ 
+ This directory contains any Document Type Definitions
+ required for document parsing. 
+@@ -643,7 +647,7 @@
+ @code{Library}.
+ 
+ @node DocTemplates, Fonts, DTDs, Folders inside Library
+-@subsubsection DocTemplates
++@subsection DocTemplates
+ 
+ This directory contains text templates for automatic documentation, as
+ generated by autodoc.  Any additional documentation template types
+@@ -657,7 +661,7 @@
+ @code{Library}.
+ 
+ @node Fonts, Frameworks, DocTemplates, Folders inside Library
+-@subsubsection Fonts
++@subsection Fonts
+ 
+ This directory contains fonts and files for organizing font information.
+ 
+@@ -665,7 +669,7 @@
+ @code{Library}.
+ 
+ @node Frameworks, Images, Fonts, Folders inside Library
+-@subsubsection Frameworks
++@subsection Frameworks
+ 
+ This directory contains frameworks.  Frameworks are a type of bundle,
+ which include, within their directory structure, a shared library
+@@ -692,10 +696,10 @@
+ @code{NSSearchPathForDirectoriesInDomains()}.
+ 
+ @node Images, Libraries/Java, Frameworks, Folders inside Library
+-@subsubsection Images
++@subsection Images
+ 
+ @node Libraries/Java, Libraries/Resources, Images, Folders inside Library
+-@subsubsection Libraries/Java
++@subsection Libraries/Java
+ 
+ This directory contains Java classes.  If you are using Java with
+ GNUstep, you probably want to make sure these directories are in your
+@@ -712,7 +716,7 @@
+ the @code{Libraries/Java} folder inside the @code{Library} location.
+ 
+ @node Libraries/Resources, KeyBindings, Libraries/Java, Folders inside Library
+-@subsubsection Libraries/Resources
++@subsection Libraries/Resources
+ 
+ This directory contains resources used by shared libraries.  In
+ GNUstep a shared library can have an associated resource bundle (a
+@@ -736,10 +740,10 @@
+ is a GNUstep extension).
+ 
+ @node KeyBindings, PostScript, Libraries/Resources, Folders inside Library
+-@subsubsection KeyBindings
++@subsection KeyBindings
+ 
+ @node PostScript, Services, KeyBindings, Folders inside Library
+-@subsubsection PostScript
++@subsection PostScript
+ 
+ This directory contains directories for specific PostScript document
+ types and definitions, allowing applications written using the GNUstep
+@@ -750,7 +754,7 @@
+ @code{Library}.
+ 
+ @node Services, Sounds, PostScript, Folders inside Library
+-@subsubsection Services
++@subsection Services
+ 
+ This directory contains bundles that are specifically built to provide
+ functionality between different programs (for example, spell checking,
+@@ -768,12 +772,12 @@
+ folder inside the @code{Library} location.
+ 
+ @node Sounds, Tools/Resources, Services, Folders inside Library
+-@subsubsection Sounds
++@subsection Sounds
+ 
+ This directory contains sound files.
+ 
+ @node Tools/Resources,  , Sounds, Folders inside Library
+-@subsubsection Tools/Resources
++@subsection Tools/Resources
+ 
+ This directory contains resources used by tools.  In GNUstep a tool
+ can have an associated resource bundle (a bundle only composed of
+@@ -796,7 +800,7 @@
+ 
+ 
+ @node Configuration,  , Structure of a Domain, Top
+-@section Configuration
++@chapter Configuration
+ 
+ GNUstep supports arbitrary filesystem layouts to map the locations in
+ the various domains to directories on the filesystem.
+@@ -841,7 +845,7 @@
+ @end menu
+ 
+ @node File Format, Windows (MINGW), Configuration, Configuration
+-@subsection File Format
++@section File Format
+ 
+ By default, the configuration file is called GNUstep.conf; it
+ typically exists in /etc/GNUstep or /usr/local/etc/GNUstep (depending
+@@ -865,7 +869,7 @@
+ explanations of what they do.
+ 
+ @node Windows (MINGW), , File Format, Configuration
+-@subsection Windows (MINGW)
++@section Windows (MINGW)
+ 
+ On ms-windows, for software development, you are likely to want to have an
+ extra configuration file.  This is because of the limitations of the
+--- gnustep-make.orig/Documentation/gnustep-make.texi
++++ gnustep-make/Documentation/gnustep-make.texi
+@@ -44,7 +44,7 @@
+ 
+ @c Makefile Package Chapter
+ @node Top, Makefile Introduction, (dir), (dir)
+-@chapter Makefile Package
++@top Makefile Package
+ 
+ @menu
+ * Makefile Introduction::       
+@@ -58,7 +58,7 @@
+ @end menu
+ 
+ @node Makefile Introduction, Makefile Structure, Top, Top
+-@section Introduction
++@chapter Introduction
+ 
+ The Makefile package is a system of make commands that is designed to
+ encapsulate all the complex details of building and installing various types
+@@ -68,7 +68,7 @@
+ type of project and files involved in the project.
+ 
+ @node Makefile Structure, Running Make, Makefile Introduction, Top
+-@section Structure of a Makefile
++@chapter Structure of a Makefile
+ 
+ Here is an example makefile (named GNUmakefile to emphasis the fact that it relies on special features of the GNU make program).
+ 
+@@ -98,7 +98,7 @@
+ 
+ 
+ @node Running Make, Project Types, Makefile Structure, Top
+-@section Running Make
++@chapter Running Make
+ @menu
+ * Debug Information::           
+ * Profile Information::         
+@@ -111,7 +111,7 @@
+ interaction.  
+ 
+ @node Debug Information, Profile Information, Running Make, Running Make
+-@subsection Debug Information
++@section Debug Information
+ 
+ By default the Makefile Package tells the compiler to generate
+ debugging information when compiling Objective-C and C files.  The
+@@ -124,7 +124,7 @@
+ @end smallexample
+ 
+ @node Profile Information, Library Types, Debug Information, Running Make
+-@subsection Profile Information
++@section Profile Information
+ 
+ By default the Makefile Package does not tell the compiler to generate
+ profiling information when compiling Objective-C and C files.  The
+@@ -137,7 +137,7 @@
+ @end smallexample
+ 
+ @node Library Types,  , Profile Information, Running Make
+-@subsection Static, Shared, and Dynamic Link Libraries
++@section Static, Shared, and Dynamic Link Libraries
+ 
+ By default the Makefile Package will generate a shared library if it is
+ building a library project type, and it will link with shared libraries
+@@ -157,7 +157,7 @@
+ build using static libraries instead, as in the above command.
+ 
+ @node Project Types, GNUmakefile.preamble, Running Make, Top
+-@section Project Types
++@chapter Project Types
+ @menu
+ * aggregate.make::              
+ * application.make::            
+@@ -200,7 +200,7 @@
+ 
+ 
+ @node aggregate.make, application.make, Project Types, Project Types
+-@subsection Aggregate (@file{aggregate.make})
++@section Aggregate (@file{aggregate.make})
+ 
+ An Aggregate project is a project that consists of several
+ subprojects. Each subproject can be of any other valid project type
+@@ -213,46 +213,46 @@
+ @end defvr
+ 
+ @node application.make, bundle.make, aggregate.make, Project Types
+-@subsection Graphical Applications (@file{application.make})
++@section Graphical Applications (@file{application.make})
+ 
+ An application is an Objective-C program that includes a GUI component,
+ and by default links in all the GNUstep libraries required for GUI
+ development, such as the Base and Gui libraries.
+ 
+ @node bundle.make, ctool.make, application.make, Project Types
+-@subsection Bundles (@file{bundle.make})
++@section Bundles (@file{bundle.make})
+ 
+ A bundle is a collection of resources and code that can be used to
+ enhance an existing application or tool dynamically using the NSBundle
+ class from the GNUstep base library.
+ 
+ @node ctool.make, documentation.make, bundle.make, Project Types
+-@subsection Command Line C Tools (@file{ctool.make})
++@section Command Line C Tools (@file{ctool.make})
+ 
+ A ctool is a project that only uses C language files.
+ Otherwise it is similar to the ObjC project type.
+ 
+ @node documentation.make, framework.make, ctool.make, Project Types
+-@subsection Documentation (@file{documentation.make})
++@section Documentation (@file{documentation.make})
+ 
+ The Documentation project provides rules to use various types of
+ documentation such as texi and LaTeX documentation, and convert them
+ into finished documentation (info, PostScript, HTML, etc). 
+ 
+ @node framework.make, java.make, documentation.make, Project Types
+-@subsection Frameworks (@file{framework.make})
++@section Frameworks (@file{framework.make})
+ 
+ A Framework is a collection of resources and a library that provides
+ common code that can be linked into a Tool or Application. In many
+ respects it is similar to a Bundle.
+ 
+ @node java.make, library.make, framework.make, Project Types
+-@subsection Java (@file{java.make})
++@section Java (@file{java.make})
+ 
+ This project provides rules for building java programs. It also makes it
+ easy to make java projects that interact with the GNUstep libraries.
+ 
+-@subsubsection Project Variables
++@subsection Project Variables
+ 
+ @defvr {Java project} JAVA_PACKAGE_NAME
+ @code{JAVA_PACKAGE_NAME} is the reverse DNS style Java package name that
+@@ -295,7 +295,7 @@
+ @end defvr
+ 
+ @node library.make, native-library.make, java.make, Project Types
+-@subsection Libraries (@file{library.make})
++@section Libraries (@file{library.make})
+ @menu
+ * library.make variables::      
+ * Example Library Makefile::    
+@@ -308,7 +308,7 @@
+ and DLLs are only supported on some platforms.
+ 
+ @node library.make variables, Example Library Makefile, library.make, library.make
+-@subsubsection Project Variables
++@subsection Project Variables
+ 
+ @defvr {Library project} LIBRARY_NAME
+ @code{LIBRARY_NAME} should be assigned the list of name of libraries to
+@@ -446,7 +446,7 @@
+ @end defvr
+ 
+ @node Example Library Makefile,  , library.make variables, library.make
+-@subsubsection Example Makefile
++@subsection Example Makefile
+ 
+ This example makefile illustrates two libraries, @file{libone} and
+ @file{libtwo}, that are to be generated.
+@@ -514,7 +514,7 @@
+ subdirectory within @code{GNUSTEP_HEADERS}.
+ 
+ @node native-library.make, nsis.make, library.make, Project Types
+-@subsection Native Library (@file{native-library.make})
++@section Native Library (@file{native-library.make})
+ 
+ A "native library" is a project which is to be built as a shared
+ library on most targets and as a framework on Darwin.  (Currently
+@@ -541,7 +541,7 @@
+ on for most targets and into -F../MyPath flag for apple-apple-apple.
+ 
+ @node nsis.make, objc.make, native-library.make, Project Types
+-@subsection NSIS Installer (@file{nsis.make})
++@section NSIS Installer (@file{nsis.make})
+ 
+ The NSIS make project provides rules for automatically generating NSIS
+ installers for Windows operating systems. In order to get this functionality,
+@@ -592,7 +592,7 @@
+ @end defvr
+ 
+ @node objc.make, palette.make, nsis.make, Project Types
+-@subsection Objective-C Programs (@file{objc.make})
++@section Objective-C Programs (@file{objc.make})
+ @menu
+ * objc.make variables::         
+ * Example ObjC Makefile::       
+@@ -604,7 +604,7 @@
+ the classes it defines are candidates for this project type.
+ 
+ @node objc.make variables, Example ObjC Makefile, objc.make, objc.make
+-@subsubsection Project Variables
++@subsection Project Variables
+ 
+ Most of the project variables work the same as in Library
+ projects (see @ref{library.make}).
+@@ -630,7 +630,7 @@
+ @end defvr
+ 
+ @node Example ObjC Makefile,  , objc.make variables, objc.make
+-@subsubsection Example Makefile
++@subsection Example Makefile
+ 
+ This makefile illustrates two Objective-C programs, @file{simple} and
+ @file{list} that are to be generated.
+@@ -677,13 +677,13 @@
+ upon the Objective-C Runtime.
+ 
+ @node palette.make, rpm.make, objc.make, Project Types
+-@subsection Palettes (@file{palette.make})
++@section Palettes (@file{palette.make})
+ 
+ A palette is a Bundle that provides some kind of GUI functionality.
+ Otherwise it is similar to the Bundle project.
+ 
+ @node rpm.make, service.make, palette.make, Project Types
+-@subsection RPMs (@file{rpm.make})
++@section RPMs (@file{rpm.make})
+ 
+ The RPM project provides rules for automatically generating RPM spec
+ files in order to make RPM distributions. Note that this project
+@@ -740,25 +740,25 @@
+ @end example
+ 
+ @node service.make, subproject.make, rpm.make, Project Types
+-@subsection Services (@file{service.make})
++@section Services (@file{service.make})
+ 
+ A Service is like a Tool that provides a service to a running GNUstep program.
+ 
+ @node subproject.make, tool.make, service.make, Project Types
+-@subsection Subprojects (@file{subproject.make})
++@section Subprojects (@file{subproject.make})
+ 
+ A Subproject provides a way to organize code in a large application into
+ subunits. The code in the subproject is merged in with the main tool
+ or application.
+ 
+ @node tool.make,  , subproject.make, Project Types
+-@subsection Command Line Tools (@file{tool.make})
++@section Command Line Tools (@file{tool.make})
+ 
+ A tool is an ObjC project that by default links in the GNUstep base
+ library. Otherwise it is similar to the ObjC project type.
+ 
+ @node GNUmakefile.preamble, GNUmakefile.postamble, Project Types, Top
+-@section Global Variables (@file{GNUmakefile.preamble})
++@chapter Global Variables (@file{GNUmakefile.preamble})
+ 
+ @file{GNUmakefile.preamble} is an optional file that may be put within the
+ package for declaring global makefile variables for the package.  The
+@@ -977,7 +977,7 @@
+ 
+ 
+ @node GNUmakefile.postamble, Common Variables, GNUmakefile.preamble, Top
+-@section Global Rules (@file{GNUmakefile.postamble})
++@chapter Global Rules (@file{GNUmakefile.postamble})
+ 
+ The @file{GNUmakefile.postamble} file is an optional file you may
+ include in your package to define additional rules that should be
+@@ -993,7 +993,7 @@
+ your specific package or that are to be used by developers only.
+ 
+ @node Common Variables, Other Variables, GNUmakefile.postamble, Top
+-@section Common Variables (@file{common.make})
++@chapter Common Variables (@file{common.make})
+ @menu
+ * Directory Paths::             
+ * Scripts::                     
+@@ -1013,7 +1013,7 @@
+ undefined.
+ 
+ @node Directory Paths, Scripts, Common Variables, Common Variables
+-@subsection Directory Paths
++@section Directory Paths
+ 
+ @defvar GNUSTEP_MAKEFILES
+ @code{GNUSTEP_MAKEFILES} is the absolute path to the directory where the
+@@ -1180,7 +1180,7 @@
+ @end defvar
+ 
+ @node Scripts, Platform Information, Directory Paths, Common Variables
+-@subsection Scripts
++@section Scripts
+ 
+ @defvar CONFIG_GUESS_SCRIPT
+ @code{CONFIG_GUESS_SCRIPT} is the absolute path to the
+@@ -1263,7 +1263,7 @@
+ @end defvar
+ 
+ @node Platform Information, Library Combination, Scripts, Common Variables
+-@subsection Host and Target Platform Information
++@section Host and Target Platform Information
+ 
+ @defvar GNUSTEP_HOST
+ @code{GNUSTEP_HOST} is the canonical host platform name; i.e. the name
+@@ -1340,7 +1340,7 @@
+ @end defvar
+ 
+ @node Library Combination, Overridable Flags, Platform Information, Common Variables
+-@subsection Library Combination
++@section Library Combination
+ 
+ @defvar OBJC_RUNTIME_LIB
+ @code{OBJC_RUNTIME_LIB} is assigned the code that indicates the
+@@ -1489,7 +1489,7 @@
+ @end defvar
+ 
+ @node Overridable Flags,  , Library Combination, Common Variables
+-@subsection Overridable Flags
++@section Overridable Flags
+ 
+ @defvar OBJCFLAGS
+ @code{OBJCFLAGS} are flags that are passed to the compiler when
+@@ -1576,7 +1576,7 @@
+ @end smallexample
+ 
+ @node Other Variables,  , Common Variables, Top
+-@section Other Variables
++@chapter Other Variables
+ 
+ Since gnustep-make is a system of scripts rather than compiled code,
+ all the source is always present and available to read, so the main

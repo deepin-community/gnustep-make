@@ -1,6 +1,7 @@
 Description: Fix FTBFS with texinfo/7.0.x.
 Origin: upstream, commit:3ff4ee8
 Bug-Debian: https://bugs.debian.org/1030387
+Forwarded: not-needed
 Last-Update: 2023-02-08
 ---
 
