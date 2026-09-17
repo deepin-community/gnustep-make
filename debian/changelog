@@ -1,9 +1,3 @@
-gnustep-make (2.9.1-4) unstable; urgency=medium
-
-  * Rebuild with LTO enabled (dpkg vendor feature optimize/lto).
-
- -- tunaichao <tunaichao@uniontech.com>  Fri, 11 Sep 2026 15:02:40 +0800
-
 gnustep-make (2.9.1-3) unstable; urgency=medium
 
   * debian/patches/texinfo-7.1.patch: New; fix FTBFS with texinfo/7.1
